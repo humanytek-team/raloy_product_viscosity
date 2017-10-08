@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="report_purchasequotation_document_viscosity" inherit_id="purchase.report_purchasequotation_document">
+            <xpath expr="//table[@class='table table-condensed']//tbody//td[@class='text-right']" position="replace">
+                <div t-if="order_line.product_id.check_viscosity == False">
+                    <td class="text-right">
+                        <span t-field="order_line.product_qty"/>
+                        <span t-field="order_line.product_uom.name" groups="product.group_uom"/>
+                    </td>
+                </div>
+                <div t-if="order_line.product_id.check_viscosity == True">
+                    <td class="text-right">
+                        <span t-field="order_line.kilograms"/>
+                        <span>kg</span>
+                    </td>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

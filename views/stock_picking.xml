@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_picking_viscosity_form">
+            <field name="name">stock.picking.viscosity.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                
+                <field name="product_qty" position="before">
+                    <field name="check_viscosity" invisible="1"/>
+                    <field name="product_uom_qty_default" readonly="1"/>
+                    <field name="viscosity" attrs="{
+                            'readonly': [('check_viscosity', '=', False)],
+                            'required': [('check_viscosity', '=', True)],
+                        }"/>
+                    <field name="kg" attrs="{
+                            'readonly': [('check_viscosity', '=', False)],
+                            'required': [('check_viscosity', '=', True)],
+                        }"/>
+                </field>
+
+                <!-- field name="product_qty" position="replace">
+                    <field name="product_qty" attrs="{'required': [('product_id', '!=', False)],'readonly': [('check_viscosity', '=', False)]}"/>
+                </field> -->
+            </field>
+        </record>
+    </data>
+</odoo>
