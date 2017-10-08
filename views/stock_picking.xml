@@ -18,6 +18,7 @@
                             'readonly': [('check_viscosity', '=', False)],
                             'required': [('check_viscosity', '=', True)],
                         }"/>
+                     <field name="new_qty" readonly="1"/>
                 </field>
 
                 <!-- field name="product_qty" position="replace">

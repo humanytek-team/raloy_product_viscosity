@@ -74,3 +74,7 @@ msgstr ""
 msgid "Viscosity"
 msgstr "Viscosidad"
 
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_new_qty
+msgid "New qty"
+msgstr "Cantidad Nueva"
