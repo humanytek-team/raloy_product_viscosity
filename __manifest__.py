@@ -19,7 +19,7 @@
 ##############################################################################
 
 {
-    'name': 'Product Viscosity',
+    'name': 'Raloy Product Viscosity',
     'version': '10.0.1.0',
     'author': 'Humanytek',
     'website': 'http://humanytek.com',
@@ -32,7 +32,7 @@
         'reports/purchase_quotation.xml',
         'views/product_template.xml',
         'views/purchase.xml',
-        'views/stock_move.xml',
+        #'views/stock_move.xml',
         'views/stock_picking.xml',
     ]
 }

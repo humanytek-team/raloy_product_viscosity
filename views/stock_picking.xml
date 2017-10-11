@@ -14,16 +14,29 @@
                             'readonly': [('check_viscosity', '=', False)],
                             'required': [('check_viscosity', '=', True)],
                         }"/>
-                    <field name="kg" attrs="{
+<!--                     <field name="kg" attrs="{
                             'readonly': [('check_viscosity', '=', False)],
                             'required': [('check_viscosity', '=', True)],
-                        }"/>
+                        }"/> -->
                      <field name="new_qty" readonly="1"/>
                 </field>
 
                 <!-- field name="product_qty" position="replace">
                     <field name="product_qty" attrs="{'required': [('product_id', '!=', False)],'readonly': [('check_viscosity', '=', False)]}"/>
                 </field> -->
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_pack_operation_lot_form_viscosity">
+            <field name="name">view_pack_operation_lot_form_viscosity</field>
+            <field name="model">stock.pack.operation</field>
+            <field name="inherit_id" ref="stock.view_pack_operation_lot_form"/>
+            <field name="arch" type="xml">
+                
+                <xpath expr="//group/span" position="after">
+                    <field name="new_qty" readonly="1"/>
+                </xpath>
+
             </field>
         </record>
     </data>

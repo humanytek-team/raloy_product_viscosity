@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-08 03:34+0000\n"
-"PO-Revision-Date: 2017-10-08 03:34+0000\n"
+"POT-Creation-Date: 2017-10-10 22:50+0000\n"
+"PO-Revision-Date: 2017-10-10 22:50+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -28,23 +28,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_check_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_check_viscosity
 msgid "Check viscosity"
-msgstr "Revisar viscosidad"
+msgstr "Revisar Viscosidad"
 
 #. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_product_uom_qty_default
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_product_uom_qty_default
-msgid "Default Qty"
-msgstr "Cantidad por defecto"
-
-#. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_kg
-msgid "Kg"
-msgstr ""
-
-#. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_kilograms
-msgid "Kilos"
-msgstr ""
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_new_qty
+msgid "New qty"
+msgstr "Cantidad (litros)"
 
 #. module: raloy_product_viscosity
 #: model:ir.model,name:raloy_product_viscosity.model_stock_pack_operation
@@ -67,6 +56,11 @@ msgid "Stock Move"
 msgstr ""
 
 #. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_product_uom_qty_default
+msgid "Supplier Units"
+msgstr "Unidades Proveedor"
+
+#. module: raloy_product_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_product_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_template_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_viscosity
@@ -74,7 +68,3 @@ msgstr ""
 msgid "Viscosity"
 msgstr "Viscosidad"
 
-#. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_new_qty
-msgid "New qty"
-msgstr "Cantidad Nueva"

@@ -21,13 +21,13 @@ class StopckPackOperation(models.Model):
         store=True,
     )
 
-    product_uom_qty_default = fields.Float('Default Qty')
+    product_uom_qty_default = fields.Float('Supplier Units')
 
-    kg = fields.Float(
-        compute='_get_kilograms',
-        digits=(6, 4),
-        store=True,
-    )
+    # kg = fields.Float(
+    #     compute='_get_kilograms',
+    #     digits=(6, 4),
+    #     store=True,
+    # )
     new_qty = fields.Float(
         compute='_get_new_qty',
         digits=(6, 4),
@@ -35,25 +35,25 @@ class StopckPackOperation(models.Model):
     )
 
     @api.multi
-    @api.depends('kg')
+    @api.depends('viscosity')
     def _get_new_qty(self):
         for r in self:
-            if r.check_viscosity:
-                 r.new_qty = (r.product_uom_qty_default/r.viscosity)*(r.product_id.viscosity or 0.0)
-
-    @api.multi
-    @api.depends('viscosity')
-    def _get_kilograms(self):
-        for r in self:
-            if r.viscosity != 0:
-                r.kg = r.product_uom_qty_default/r.viscosity
+            if r.check_viscosity and r.viscosity:
+                 r.new_qty = r.product_uom_qty_default * r.viscosity
 
     # @api.multi
-    # @api.onchange('viscosity')
-    # def _get_product_oum_qty_viscosity(self):
+    # @api.depends('kg')
+    # def _get_new_qty(self):
     #     for r in self:
     #         if r.check_viscosity:
-    #             r.qty_done = (r.product_uom_qty_default/r.viscosity)*(r.product_id.viscosity or 0.0)
+    #              r.new_qty = (r.product_uom_qty_default/r.viscosity)*(r.product_id.viscosity or 0.0)
+
+    # @api.multi
+    # @api.depends('viscosity')
+    # def _get_kilograms(self):
+    #     for r in self:
+    #         if r.viscosity != 0:
+    #             r.kg = r.product_uom_qty_default/r.viscosity
 
 
     @api.multi
