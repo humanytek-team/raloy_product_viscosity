@@ -16,7 +16,7 @@ class StopckPackOperation(models.Model):
     )
     viscosity = fields.Float(
         compute='_get_viscosity',
-        default=lambda self: self.product_id.product_tmpl_id.viscosity,
+        #default=lambda self: self.product_id.product_tmpl_id.viscosity,
         digits=(6, 4),
         store=True,
     )
