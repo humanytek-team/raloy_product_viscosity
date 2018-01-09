@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<odoo>
+<!-- <odoo>
     <data>
         <record model="ir.ui.view" id="product_template_viscosity_form">
             <field name="name">product.template.viscosity.form</field>
@@ -15,4 +15,34 @@
             </field>
         </record>
     </data>
+</odoo>
+ -->
+<odoo>
+    <record id="product_supplierinfo_form_view_viscosity" model="ir.ui.view">
+        <field name="name">product_supplierinfo_form_view_viscosity</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position='after'>
+                <field name="viscosity" />
+            </field>
+
+            <!-- <field name="product_uom" position='replace'>
+                <field name="product_uom" class="oe_inline" />
+            </field> -->
+        </field>
+    </record>
+
+
+    <record id="product_supplierinfo_tree_view_viscosity" model="ir.ui.view">
+        <field name="name">product_supplierinfo_tree_view_viscosity</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="product_tmpl_id" position='after'>
+                <!-- <field name="viscosity" /> -->
+                <field name="product_uom" />
+            </field>
+        </field>
+    </record>
 </odoo>

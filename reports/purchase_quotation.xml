@@ -3,13 +3,15 @@
     <data>
         <template id="report_purchasequotation_document_viscosity" inherit_id="purchase.report_purchasequotation_document">
             <xpath expr="//table[@class='table table-condensed']//tbody//td[@class='text-right']" position="replace">
-                <div t-if="order_line.check_viscosity != True">
+                <!-- <div t-if="order_line.check_viscosity != True"> -->
+                <div t-if="line.viscosity &lt;= 0">
                     <td class="text-right">
                         <span t-field="order_line.product_qty"/>
                         <span t-field="order_line.product_uom.name" groups="product.group_uom"/>
                     </td>
                 </div>
-                <div t-if="order_line.check_viscosity == True">
+                <!-- <div t-if="order_line.check_viscosity == True"> -->
+                <div t-if="line.viscosity &gt; 0">
                     <td class="text-right">
                         <span t-field="order_line.product_qty"/>
                         <span>kg</span>
