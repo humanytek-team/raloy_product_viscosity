@@ -49,7 +49,9 @@ class StopckPackOperation(models.Model):
 
                 viscosity = 0
                 partner_id = r.picking_id and r.picking_id.partner_id or False
-                seller = r.product_id._select_seller(partner_id)
+                seller = r.product_id._select_seller_viscosity(partner_id)
+                #seller = self.product_id._select_seller_viscosity(partner,self.product_qty,self.order_id.date_order,self.product_uom)
+
 
                 if seller:
                     viscosity = seller.viscosity
