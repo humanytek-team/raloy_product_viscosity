@@ -29,12 +29,14 @@ class StopckPackOperation(models.Model):
         store=True,
     )
 
+    picking_type_code = fields.Char(compute='_get_picking_type_code')
+
     @api.multi
     @api.depends('viscosity')
     def _get_new_qty(self):
         for r in self:
             #if r.check_viscosity and r.viscosity:
-            if r.viscosity and r.viscosity > 0:
+            if r.viscosity and r.viscosity > 0 and r.picking_type_code == 'incoming':
                  r.new_qty = r.product_uom_qty_default * r.viscosity
 
 
@@ -43,7 +45,7 @@ class StopckPackOperation(models.Model):
     def _get_viscosity(self):
         #print '_get_viscosity'
         for r in self:
-            if not r.viscosity:
+            if not r.viscosity and r.picking_type_code == 'incoming':
                 #print '111111'
                 #r.viscosity = r.product_id.product_tmpl_id.viscosity
 
@@ -57,3 +59,11 @@ class StopckPackOperation(models.Model):
                     viscosity = seller.viscosity
 
                 r.viscosity = viscosity
+
+
+    @api.multi
+    def _get_picking_type_code(self):
+        print '_get_picking_type_code'
+        for r in self:
+            if r.picking_id and r.picking_id.picking_type_id:
+                r.picking_type_code = r.picking_id.picking_type_id.code
