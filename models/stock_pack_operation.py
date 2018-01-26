@@ -80,6 +80,8 @@ class StopckPackOperation(models.Model):
         store=True,
     )
 
+    format_uom = fields.Many2one('product.uom', compute='_get_viscosity')
+
     product_uom_qty_default = fields.Float('Supplier Units')
 
 
@@ -97,13 +99,20 @@ class StopckPackOperation(models.Model):
         for r in self:
             #if r.check_viscosity and r.viscosity:
             if r.viscosity and r.viscosity > 0 and r.picking_type_code == 'incoming':
-                 r.new_qty = r.product_uom_qty_default * r.viscosity
+
+                # print 'self.format_uom.name.lower(): ',self.format_uom.name.lower()
+                # print 'r.product_uom_qty_default: ',r.product_uom_qty_default
+                # print 'r.viscosity: ',r.viscosity
+                if self.format_uom.name.lower() in ('kg'):
+                    r.new_qty = r.product_uom_qty_default * r.viscosity
+                elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+                    r.new_qty = r.product_uom_qty_default / float(r.viscosity)
 
 
     @api.multi
     @api.depends('product_id')
     def _get_viscosity(self):
-        #print '_get_viscosity'
+        print '_get_viscosity'
         for r in self:
             if not r.viscosity and r.picking_type_code == 'incoming':
                 #print '111111'
@@ -117,8 +126,12 @@ class StopckPackOperation(models.Model):
 
                 if seller:
                     viscosity = seller.viscosity
+                    format_uom = seller.format_uom.id
+                    print 'format_uom'
+                    r.format_uom = format_uom
 
                 r.viscosity = viscosity
+                
 
 
     @api.multi
