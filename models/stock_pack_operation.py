@@ -104,9 +104,10 @@ class StopckPackOperation(models.Model):
                 # print 'r.product_uom_qty_default: ',r.product_uom_qty_default
                 # print 'r.viscosity: ',r.viscosity
                 if self.format_uom.name.lower() in ('kg'):
-                    r.new_qty = r.product_uom_qty_default * r.viscosity
-                elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
                     r.new_qty = r.product_uom_qty_default / float(r.viscosity)
+                    
+                elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+                    r.new_qty = r.product_uom_qty_default * r.viscosity
 
 
     @api.multi
