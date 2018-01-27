@@ -26,6 +26,24 @@ class PurchaseOrderLine(models.Model):
         return self.product_uom.name
 
 
+    @api.multi
+    def get_new_qty(self):
+        #print 'get_new_qty'
+        _logger.info(u'get_new_qty')
+        partner = self.order_id.partner_id
+        seller = self.product_id._select_seller(partner,self.product_qty,self.order_id.date_order,self.product_uom)
+        new_qty = 0
+        if seller:
+            format_uom = seller.format_uom.name
+            if format_uom.lower() in ('kg'):
+                new_qty = self.product_qty / self.viscosity
+                
+            elif format_uom.lower() in ('liter(s)','litro(s)'):
+                new_qty = self.product_qty * self.viscosity
+
+        return new_qty
+
+
 
 
 # class ProductProduct(models.Model):

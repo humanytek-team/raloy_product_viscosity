@@ -33,7 +33,7 @@ msgstr "Revisar Viscosidad"
 #. module: raloy_product_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_new_qty
 msgid "New qty"
-msgstr "Cantidad (litros)"
+msgstr "Nueva Cantidad"
 
 #. module: raloy_product_viscosity
 #: model:ir.model,name:raloy_product_viscosity.model_stock_pack_operation

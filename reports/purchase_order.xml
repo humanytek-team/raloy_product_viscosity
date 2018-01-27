@@ -15,7 +15,8 @@
                 <!-- <div t-if="line.check_viscosity == True"> -->
                 <div t-if="line.viscosity &gt; 0">
                     <td class="text-right">
-                        <span t-field="line.product_qty"/>
+                        <!-- <span t-field="line.product_qty"/> -->
+                        <span t-esc="line.get_new_qty()" />
                         <span t-esc="line.get_format_uom()" />
                         <!-- <t t-set="picking" t-value="o.get_picking()"/>
                         <span>kg</span> -->
