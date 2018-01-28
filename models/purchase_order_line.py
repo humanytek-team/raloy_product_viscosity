@@ -32,9 +32,15 @@ class PurchaseOrderLine(models.Model):
 
         #NEW
         viscosity = 0
+        format_uom = False
         if seller:
+            if seller.format_uom:
+                format_uom = seller.format_uom.id
+            else:
+                format_uom = self.product_uom.id
             viscosity = seller.viscosity
         self.viscosity = viscosity
+        self.format_uom = format_uom
         ####
         
         self.price_unit = price_unit
@@ -42,6 +48,7 @@ class PurchaseOrderLine(models.Model):
         
 
     #CAMPOS
+    format_uom = fields.Many2one('product.uom')
     viscosity = fields.Float(
             digits=(6, 4)
         )
