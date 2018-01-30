@@ -17,12 +17,52 @@
                     <td class="text-right">
                         <!-- <span t-field="line.product_qty"/> -->
                         <span t-esc="line.get_new_qty()" />
-                        <span t-esc="line.get_format_uom()" />
+                        <!-- <span t-esc="'{0:,.2f}'.format(line.get_new_qty())" /> -->
+                        <span t-esc="line.get_format_uom().name" />
                         <!-- <t t-set="picking" t-value="o.get_picking()"/>
                         <span>kg</span> -->
                     </td>
                 </div>
             </xpath>
+<!-- 
+            <xpath expr="//tr[@t-foreach='o.order_line']//td[4]/span" position="replace">
+                <span t-esc="line.get_new_price()" />
+            </xpath>
+
+            <xpath expr="//tr[@t-foreach='o.order_line']//td[5]/span" position="replace">
+                <span t-field="line.price_subtotal_viscosity"/>
+            </xpath>
+
+            <xpath expr="//div[@class='row'][2]" position="replace">
+                <div class="row">
+                    <div class="col-xs-4 pull-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td><strong>Total Without Taxes</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_untaxed_viscosity"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_tax_viscosity"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_total_viscosity"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </xpath> -->
+
         </template>
     </data>
 </odoo>

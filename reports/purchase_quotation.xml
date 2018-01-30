@@ -13,8 +13,9 @@
                 <!-- <div t-if="order_line.check_viscosity == True"> -->
                 <div t-if="order_line.viscosity &gt; 0">
                     <td class="text-right">
-                        <span t-field="order_line.product_qty"/>
-                        <span t-esc="order_line.get_format_uom()" />
+                        <!-- <span t-field="order_line.product_qty"/> -->
+                        <span t-esc="order_line.get_new_qty()" />
+                        <span t-esc="order_line.get_format_uom().name" />
                         <!-- <span>kg</span> -->
                     </td>
                 </div>
