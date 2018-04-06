@@ -10,16 +10,30 @@
                         <span t-field="order_line.product_uom.name" groups="product.group_uom"/>
                     </td>
                 </div>
-                <!-- <div t-if="order_line.check_viscosity == True"> -->
+
                 <div t-if="order_line.viscosity &gt; 0">
                     <td class="text-right">
                         <!-- <span t-field="order_line.product_qty"/> -->
-                        <span t-esc="order_line.get_new_qty()" />
-                        <span t-esc="order_line.get_format_uom().name" />
-                        <!-- <span>kg</span> -->
+                        <span t-field="order_line.new_qty"/>
+                        <span t-field="order_line.format_uom.name"/>
+                        <!-- <span t-esc="order_line.get_new_qty()" />
+                        <span t-esc="order_line.get_format_uom().name" /> -->
                     </td>
                 </div>
+
             </xpath>
+
+            <xpath expr="//table[@class='table table-condensed']/tbody/tr/td[4]" position="replace">
+                <td class="text-right">
+                    <!-- <span t-esc="'{0:,.4f}'.format(order_line.get_original_price())" /> -->
+                    <span t-esc="'{0:,.4f}'.format(order_line.new_price_unit)" />
+                </td>
+            </xpath>
+
         </template>
+
     </data>
 </odoo>
+
+
+            

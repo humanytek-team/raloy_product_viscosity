@@ -11,13 +11,14 @@
                     <!-- <field name="check_viscosity" invisible="1"/> -->
                     <field name="product_uom_qty_default" readonly="1"/>
                     <field name="picking_type_code" invisible="1"/>
+                    <field name="format_uom" invisible="1"/>
                     <field name="viscosity" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
                     <!-- <field name="viscosity" invisible="0"/> -->
                     <!-- <field name="viscosity" attrs="{
                             'readonly': [('check_viscosity', '=', False)],
                             'required': [('check_viscosity', '=', True)],
                         }"/> -->
-                     <field name="new_qty" readonly="1" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
+                     <field name="new_qty" readonly="0" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
                 </field>
 
             </field>
@@ -32,6 +33,7 @@
                 <xpath expr="//group/span" position="after">
                     <!-- <field name="new_qty" readonly="1"/> -->
                     <field name="picking_type_code" invisible="1"/>
+                    <field name="format_uom" invisible="1"/>
                     <field name="new_qty" readonly="1" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
                 </xpath>
             </field>

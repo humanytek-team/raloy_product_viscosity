@@ -1,4 +1,4 @@
 Product Viscosity
 =================
 
-Add viscosity to products
+Añade la funcionalidad de un factor de Viscosidad para poder convertir de Kilos a Litros.

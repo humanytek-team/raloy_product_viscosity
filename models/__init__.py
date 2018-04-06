@@ -18,10 +18,9 @@
 #
 ##############################################################################
 
-from . import supplier_info
-#from . import product_template
-from . import purchase_order_line
-#from . import stock_move
-from . import stock_pack_operation
-from . import product
+import supplier_info
+import purchase_order_line
+import stock_pack_operation
+import product
+#import account
 

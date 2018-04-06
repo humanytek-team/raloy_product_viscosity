@@ -1,68 +1,58 @@
 from odoo import api, fields, models
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import odoo.addons.decimal_precision as dp
+from openerp.tools import float_compare
+
 import logging
 _logger = logging.getLogger(__name__)
 
-
-class PurchaseOrder(models.Model):
-    _inherit = "purchase.order"
-
-
-    @api.depends('order_line.price_total')
-    def _amount_all(self):
-        for order in self:
-            amount_untaxed = amount_tax = 0.0
-            for line in order.order_line:
-                amount_untaxed += line.price_subtotal
-                # FORWARDPORT UP TO 10.0
-                if order.company_id.tax_calculation_rounding_method == 'round_globally':
-                    #price_unit = line.get_new_price()
-                    product_qty = line.get_new_qty()
-                    taxes = line.taxes_id.compute_all(line.price_unit, line.order_id.currency_id, product_qty, product=line.product_id, partner=line.order_id.partner_id)
-                    amount_tax += sum(t.get('amount', 0.0) for t in taxes.get('taxes', []))
-                else:
-                    amount_tax += line.price_tax
-            order.update({
-                'amount_untaxed': order.currency_id.round(amount_untaxed),
-                'amount_tax': order.currency_id.round(amount_tax),
-                'amount_total': amount_untaxed + amount_tax,
-            })
-
-    # amount_untaxed = fields.Monetary(string='Untaxed Amount Viscosity', store=False, readonly=True, compute='_amount_all')
-    # amount_tax = fields.Monetary(string='Taxes Viscosity', store=False, readonly=True, compute='_amount_all')
-    # amount_total = fields.Monetary(string='Total Viscosity', store=False, readonly=True, compute='_amount_all')
 
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
 
-    # @api.model
-    # def create(self, values):
-    #     print 'purchase create'
-    #     line = super(PurchaseOrderLine, self).create(values)
-        
-    #     new_price = line.get_new_price()
-    #     print 'new_price: ',new_price
-    #     line.new_price = new_price
-    #     print 'line.new_price: ',line.new_price
-    #     return line
+    # @api.onchange('product_qty', 'product_uom')
+    # def _onchange_quantity(self):
+    #     """
+    #     SOBRESCRITURA DE METODO onchange
+    #     PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO 
+    #     EN LAS LINEAS DE COMPRA
+    #     """
+    #     print '_onchange_quantity'
+    #     super(PurchaseOrderLine,self)._onchange_quantity()
+    #     print 'self: ',self
+    #     #NEW#################
+    #     seller = self.product_id._select_seller(
+    #         partner_id=self.partner_id,
+    #         quantity=self.product_qty,
+    #         date=self.order_id.date_order and self.order_id.date_order[:10],
+    #         uom_id=self.product_uom)
 
-    # @api.multi
-    # def write(self, values):
-    #     print 'purchase write'
-    #     result = super(PurchaseOrderLine, self).write(values)
-    #     print 'result: ',result
-    #     new_price = self.get_new_price()
-    #     print 'new_price: ',new_price
-    #     self.new_price = new_price
-    #     print 'self.new_price: ',self.new_price
+    #     viscosity = 0
+    #     format_uom = False
+    #     if seller:
+    #         if seller.format_uom:
+    #             format_uom = seller.format_uom
+    #         else:
+    #             format_uom = self.product_uom
+    #         viscosity = seller.viscosity
+    #     self.viscosity = viscosity
+    #     self.format_uom = format_uom
 
-    #     return result
+    #     if viscosity > 0:
+    #         self.new_qty = self.get_new_qty()
+    #         self.new_price_unit = self.get_new_price()
+    #     #####################
 
     @api.onchange('product_qty', 'product_uom')
     def _onchange_quantity(self):
-        #print '_onchange_quantity'
+        """
+        SOBRESCRITURA DE METODO onchange
+        PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO 
+        EN LAS LINEAS DE COMPRA
+        """
+        print '_onchange_quantity'
         if not self.product_id:
             return
 
@@ -85,7 +75,9 @@ class PurchaseOrderLine(models.Model):
         if seller and self.product_uom and seller.product_uom != self.product_uom:
             price_unit = seller.product_uom._compute_price(price_unit, self.product_uom)
 
-        #NEW
+        self.price_unit = price_unit
+        
+        #NEW#################
         viscosity = 0
         format_uom = False
         if seller:
@@ -98,88 +90,188 @@ class PurchaseOrderLine(models.Model):
         self.format_uom = format_uom
 
         if viscosity > 0:
-            price_unit = self.get_new_price(price_unit)
-        ####
-        self.price_unit = price_unit
+
+            if format_uom.name.lower() in ('kg'):
+                x_qty = self.new_qty / self.viscosity
+            elif format_uom.name.lower() in ('liter(s)','litro(s)'):
+                x_qty = self.new_qty * self.viscosity
+
+            if float_compare(x_qty, self.product_qty, precision_digits=5) != 0:
+                self.new_qty = self.product_qty
+
+            self.new_price_unit = self.price_unit
+            self.onchange_new_price_unit()
+            #print 'self.new_price_unit: ',self.new_price_unit
+
+        # if viscosity > 0:
+        #     self.new_qty = self.get_new_qty()
+        #     self.new_price_unit = self.get_new_price()
+        #####################
+        
 
 
 
-    @api.multi
-    def get_format_uom(self):
-        #print 'get_format_uom'
-        _logger.info(u'get_format_uom')
-        partner = self.order_id.partner_id
-        _logger.info(u'seller.name %s' % partner.name)
-        if not self.format_uom:
-            seller = self.product_id._select_seller_viscosity(partner)
-            #seller = self.product_id._select_seller(partner,self.product_qty,self.order_id.date_order,self.product_uom)
-            _logger.info(u'no format_uom found...looking')
-            if seller:
-                _logger.info(u'seller.name %s' % seller.name)
-                return seller.format_uom
-        _logger.info(u'fail')
-        return self.product_uom
+    # @api.multi
+    # def get_format_uom(self):
+    #     """
+    #     DEVUELVE LA UNIDAD DE MEDIDA DE PROVEEDOR
+    #     LA QUE APARECERA EN LA IMPRESION DE PEDIDO DE COMPRA
+    #     """
+    #     print 'get_format_uom'
+    #     _logger.info(u'get_format_uom')
+    #     partner = self.order_id.partner_id
+    #     _logger.info(u'seller.name %s' % partner.name)
+    #     #print 'self.format_uom: ',self.format_uom
+    #     if not self.format_uom:
+    #         seller = self.product_id._select_seller_viscosity(partner)
+    #         #seller = self.product_id._select_seller(partner,self.product_qty,self.order_id.date_order,self.product_uom)
+    #         _logger.info(u'no format_uom found...looking')
+    #         if seller:
+    #             _logger.info(u'seller.name %s' % seller.name)
+    #             return seller.format_uom
+    #         else:
+    #             _logger.info(u'fail')
+    #             return self.product_uom
+    #     else:
+    #         return self.format_uom
 
 
-    @api.multi
-    def get_new_qty(self):
-        #print 'get_new_qty'
-        _logger.info(u'get_new_qty')
-        #new_qty = 0
-        new_qty = self.product_qty
+    # @api.multi
+    # def get_new_qty(self):
+    #     """
+    #     CALCULA Y DEVUELVE LA CANTIDAD CONVERTIDA EN LTS O KGS
+    #     SEGUN CORRESPONDA
+    #     ESTA CANTIDAD ES LA QUE SE QUIERE QUEDE GUARDADA EN odoo
+    #     Y APARESCA EN LOS MOVIMIENTOS CONTABLES Y ALMACEN
+    #     """
+    #     print 'get_new_qty'
+    #     _logger.info(u'get_new_qty')
+    #     #new_qty = 0
+    #     new_qty = self.product_qty
 
-        if self.viscosity > 0:
-            #partner = self.order_id.partner_id
-            format_uom = self.format_uom
-            if not format_uom:
-                format_uom = self.get_format_uom()
-            if format_uom:
-                if format_uom.name.lower() in ('kg'):
-                    new_qty = self.product_qty / self.viscosity
+    #     if self.viscosity > 0:
+    #         #partner = self.order_id.partner_id
+    #         format_uom = self.format_uom
+    #         if not format_uom:
+    #             format_uom = self.get_format_uom()
+    #         if format_uom:
+    #             new_qty = self.product_qty / self.viscosity
+
+    #     return new_qty
+
+
+    # @api.multi
+    # def get_original_price(self,default_price=False):
+    #     print 'get_original_price'
+    #     _logger.info(u'get_original_price')
+
+    #     new_price = default_price
+    #     if not new_price:
+    #         new_price = self.price_unit
+    #     if self.viscosity > 0:
+    #         #partner = self.order_id.partner_id
+    #         format_uom = self.format_uom
+    #         if not format_uom:
+    #             format_uom = self.get_format_uom()
+    #         if format_uom:
+    #             if format_uom.name.lower() in ('kg'):
+    #                 new_price = new_price * self.viscosity
                     
-                elif format_uom.name.lower() in ('liter(s)','litro(s)'):
-                    new_qty = self.product_qty * self.viscosity
+    #             elif format_uom.name.lower() in ('liter(s)','litro(s)'):
+    #                 new_price = new_price / self.viscosity
+    #     return new_price
 
-        return new_qty
 
-    @api.multi
-    def get_new_price(self,default_price=False):
-        _logger.info(u'get_new_price')
+    # @api.multi
+    # def get_new_price(self,default_price=False):
+    #     print 'get_new_price'
+    #     _logger.info(u'get_new_price')
 
-        new_price = default_price
-        if not new_price:
-            new_price = self.price_unit
-        if self.viscosity > 0:
-            #partner = self.order_id.partner_id
-            format_uom = self.format_uom
-            if not format_uom:
-                format_uom = self.get_format_uom()
-            if format_uom:
-                if format_uom.name.lower() in ('kg'):
-                    new_price = new_price / self.viscosity
-                    #new_price = self.price_unit / self.viscosity
+    #     new_price = default_price
+    #     if not new_price:
+    #         new_price = self.price_unit
+    #     if self.viscosity > 0:
+    #         #partner = self.order_id.partner_id
+    #         format_uom = self.format_uom
+    #         if not format_uom:
+    #             format_uom = self.get_format_uom()
+    #         if format_uom:
+    #             if format_uom.name.lower() in ('kg'):
+    #                 new_price = new_price / self.viscosity
+    #                 #new_price = self.price_unit / self.viscosity
                     
-                elif format_uom.name.lower() in ('liter(s)','litro(s)'):
-                    new_price = new_price * self.viscosity
-                    #new_price = self.price_unit * self.viscosity
-        return new_price
+    #             elif format_uom.name.lower() in ('liter(s)','litro(s)'):
+    #                 new_price = new_price * self.viscosity
+    #                 #new_price = self.price_unit * self.viscosity
+    #     return new_price
 
-    @api.depends('product_qty', 'price_unit', 'taxes_id', 'viscosity')
-    def _compute_amount(self):
-        for line in self:
-            #price_unit = line.get_new_price()
-            product_qty = line.get_new_qty()
 
-            taxes = line.taxes_id.compute_all(line.price_unit, line.order_id.currency_id, product_qty, product=line.product_id, partner=line.order_id.partner_id)
-            line.update({
-                'price_tax': taxes['total_included'] - taxes['total_excluded'],
-                'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'],
-            })
+
+    # @api.multi
+    # def get_new_price(self,default_price=False):
+    #     """
+    #     DIVIDE EL IMPORTE DE LINEA ENTRE LA CANTIDAD NUEVA
+    #     PARA OBTENER EL PRECIO QUE TIENE QUE APARECER
+    #     EN LOS MOVIMIENTOS CONTABLES
+    #     APLICA SOLO CUANDO LA CONVERSION ES DE KILOS A LTS
+    #     SI ES DE LTS A KG, EL NEW PRICE TENDRA L MISMO VALOR QUE PRICE UNIT
+    #     """
+    #     print 'get_new_price'
+    #     _logger.info(u'get_new_price')
+    #     new_price = 0
+    #     if self.viscosity > 0 and self.new_qty > 0:
+    #         if self.format_uom.name.lower() not in ('litro(s)','liter(s)') :
+    #             new_price = self.price_subtotal / self.new_qty
+    #         else:
+    #             new_price = self.price_unit
+    #     return new_price
+
+    # @api.multi
+    # @api.depends('price_unit')
+    # def _compute_new_price_unit(self,):
+    #     print '_compute_new_price_unit'
+    #     for rec in self:
+    #         rec.new_price_unit = rec.get_new_price()
+
+
+    @api.onchange('new_qty')
+    def onchange_new_qty(self):
+        print 'onchange_new_qty'
+        if self.viscosity > 0:
+            if self.format_uom.name.lower() in ('kg'):
+                self.product_qty = self.new_qty / self.viscosity
+                
+            elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+                self.product_qty = self.new_qty * self.viscosity
+
+    # @api.onchange('new_qty')
+    # def onchange_new_qty(self):
+    #     print 'onchange_new_qty'
+    #     if self.viscosity > 0:
+    #         self.product_qty = self.new_qty / self.viscosity
+    #         print 'self.product_qty: ',self.product_qty
+
+    @api.onchange('new_price_unit','new_qty')
+    def onchange_new_price_unit(self):
+        print 'onchange_new_price_unit'
+        if self.viscosity > 0:
+            if self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+                return
+            else:
+                self.price_unit = self.new_price_unit * self.viscosity
+
+
+    # @api.onchange('new_price_unit','new_qty')
+    # def onchange_new_price_unit(self):
+    #     print 'onchange_new_price_unit'
+    #     if self.viscosity > 0:
+    #         self.price_unit = self.new_price_unit * self.viscosity
 
     #CAMPOS
+    #regular_price_unit = fields.Float(string='Original Unit Price', required=False, digits=dp.get_precision('Product Price'))
+
+    viscosity = fields.Float('Density',digits=(6, 4))
     format_uom = fields.Many2one('product.uom')
-    viscosity = fields.Float(digits=(6, 4))
-    #price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal Viscosity', store=False)
-    #price_total = fields.Monetary(compute='_compute_amount', string='Total Viscosity', store=False)
-    #price_tax = fields.Monetary(compute='_compute_amount', string='Tax Viscosity', store=False)
+    new_qty = fields.Float(string='New Qty', digits=dp.get_precision('Product Price'))
+    new_price_unit = fields.Float(string='New Price', digits=dp.get_precision('Product Price'))
+    #new_price_unit = fields.Float(string='New Price', digits=dp.get_precision('Product Price'),compute='_compute_new_price_unit')

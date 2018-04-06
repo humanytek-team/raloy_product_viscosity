@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-10 22:50+0000\n"
-"PO-Revision-Date: 2017-10-10 22:50+0000\n"
+"POT-Creation-Date: 2018-02-10 04:11+0000\n"
+"PO-Revision-Date: 2018-02-10 04:11+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,24 +16,51 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: raloy_product_viscosity
-#: model:ir.ui.view,arch_db:raloy_product_viscosity.report_purchaseorder_document_viscosity
-#: model:ir.ui.view,arch_db:raloy_product_viscosity.report_purchasequotation_document_viscosity
-msgid "<span>kg</span>"
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_viscosity
+msgid "Density"
+msgstr "Densidad"
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_supplierinfo_format_uom
+msgid "Format Unit of Measure"
+msgstr "Unidad de medida de formato"
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_format_uom
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_format_uom
+msgid "Format uom"
+msgstr "Unidad de medida de formato"
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_ignore
+msgid "Ignore"
+msgstr "Ignorar"
+
+#. module: raloy_product_viscosity
+#: model:ir.model,name:raloy_product_viscosity.model_product_supplierinfo
+msgid "Information about a product vendor"
 msgstr ""
 
 #. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_product_check_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_template_check_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_check_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_check_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_check_viscosity
-msgid "Check viscosity"
-msgstr "Revisar Viscosidad"
+#: model:ir.model,name:raloy_product_viscosity.model_account_invoice
+msgid "Invoice"
+msgstr ""
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_new_price_unit
+msgid "New Price"
+msgstr "Nuevo precio"
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_purchase_order_line_new_qty
+msgid "New Qty"
+msgstr "Nueva cantidad"
 
 #. module: raloy_product_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_new_qty
 msgid "New qty"
-msgstr "Nueva Cantidad"
+msgstr "Nueva cantidad"
 
 #. module: raloy_product_viscosity
 #: model:ir.model,name:raloy_product_viscosity.model_stock_pack_operation
@@ -41,8 +68,23 @@ msgid "Packing Operation"
 msgstr ""
 
 #. module: raloy_product_viscosity
-#: model:ir.model,name:raloy_product_viscosity.model_product_template
-msgid "Product Template"
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_picking_type_code
+msgid "Picking type code"
+msgstr ""
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,help:raloy_product_viscosity.field_product_supplierinfo_format_uom
+msgid "Printed in formats for products with viscosity"
+msgstr "Se muestra en productos con densidad"
+
+#. module: raloy_product_viscosity
+#: model:ir.model,name:raloy_product_viscosity.model_product_product
+msgid "Product"
+msgstr ""
+
+#. module: raloy_product_viscosity
+#: model:ir.model,name:raloy_product_viscosity.model_purchase_order
+msgid "Purchase Order"
 msgstr ""
 
 #. module: raloy_product_viscosity
@@ -58,13 +100,15 @@ msgstr ""
 #. module: raloy_product_viscosity
 #: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_product_uom_qty_default
 msgid "Supplier Units"
-msgstr "Unidades Proveedor"
+msgstr ""
 
 #. module: raloy_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_product_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_template_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_move_viscosity
-#: model:ir.model.fields,field_description:raloy_product_viscosity.field_stock_pack_operation_viscosity
+#: model:ir.model,name:raloy_product_viscosity.model_stock_picking
+msgid "Transfer"
+msgstr ""
+
+#. module: raloy_product_viscosity
+#: model:ir.model.fields,field_description:raloy_product_viscosity.field_product_supplierinfo_viscosity
 msgid "Viscosity"
-msgstr "Viscosidad"
+msgstr "Densidad"
 

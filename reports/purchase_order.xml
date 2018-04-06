@@ -16,20 +16,29 @@
                 <div t-if="line.viscosity &gt; 0">
                     <td class="text-right">
                         <!-- <span t-field="line.product_qty"/> -->
-                        <span t-esc="line.get_new_qty()" />
+                        <!-- <span t-field="line.product_qty"/> -->
+                        <span t-field="line.new_qty"/>
                         <!-- <span t-esc="'{0:,.2f}'.format(line.get_new_qty())" /> -->
-                        <span t-esc="line.get_format_uom().name" />
+                        <span t-esc="line.format_uom.name" />
                         <!-- <t t-set="picking" t-value="o.get_picking()"/>
                         <span>kg</span> -->
                     </td>
                 </div>
             </xpath>
-<!-- 
-            <xpath expr="//tr[@t-foreach='o.order_line']//td[4]/span" position="replace">
-                <span t-esc="line.get_new_price()" />
-            </xpath>
 
-            <xpath expr="//tr[@t-foreach='o.order_line']//td[5]/span" position="replace">
+            
+            <xpath expr="//tr[@t-foreach='o.order_line']//td[4]/span" position="replace">
+                <div t-if="line.viscosity &lt;= 0">
+                    <span t-esc="line.price_unit" />
+                </div>
+                <div t-if="line.viscosity &gt; 0">
+                    <span t-esc="'{0:,.4f}'.format(line.new_price_unit)" />
+                </div>
+                
+            </xpath>
+            
+
+<!--             <xpath expr="//tr[@t-foreach='o.order_line']//td[5]/span" position="replace">
                 <span t-field="line.price_subtotal_viscosity"/>
             </xpath>
 

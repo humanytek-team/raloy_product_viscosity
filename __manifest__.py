@@ -26,6 +26,7 @@
     'depends': [
         'purchase',
         'stock',
+        'raloy_purchase_fields',
     ],
     'data': [
         'reports/purchase_order.xml',

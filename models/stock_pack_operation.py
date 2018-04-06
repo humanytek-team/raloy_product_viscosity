@@ -4,7 +4,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
 
 
-class Picking(models.Model):
+class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
@@ -67,71 +67,110 @@ class StopckPackOperation(models.Model):
 
     @api.model
     def create(self, vals):
+        #print 'create'
+        #print 'vals',vals
         vals['product_uom_qty_default'] = vals.get('product_qty')
+
+        #BUSCAR PICKING
+        picking_id = vals.get('picking_id',False)
+        picking_obj = self.env['stock.picking']
+        res = picking_obj.search([('id','=',picking_id)])
+        #print 'res: ',res
+        if res and res.purchase_id:
+            for line in res.purchase_id.order_line:
+                print 'line.product_id.id: ',line.product_id.id
+                if line.product_id.id == vals.get('product_id'):
+                    vals['viscosity'] = line.viscosity
+                    vals['format_uom'] = line.format_uom.id
+                    vals['product_uom_qty_default'] = line.new_qty
+                    vals['new_qty'] = line.product_qty
+                    continue
+                # if line.product_id.id == vals.get('product_id'):
+                #     vals['viscosity'] = line.viscosity
+                #     vals['format_uom'] = line.format_uom.id
+                #     vals['product_uom_qty_default'] = line.product_qty
+                #     vals['new_qty'] = line.new_qty
+                #     continue
+
         return super(StopckPackOperation, self).create(vals)
 
 
     # check_viscosity = fields.Boolean(
     #     related="product_id.product_tmpl_id.check_viscosity",
     # )
-    viscosity = fields.Float(
-        compute='_get_viscosity',
+    viscosity = fields.Float('Density',
+        #compute='_get_viscosity',
+        #inverse='_compute_new_qty',
         digits=(6, 4),
-        store=True,
+        #store=True,
     )
 
-    format_uom = fields.Many2one('product.uom', compute='_get_viscosity')
+    #format_uom = fields.Many2one('product.uom', compute='_get_viscosity')
+    format_uom = fields.Many2one('product.uom')
 
     product_uom_qty_default = fields.Float('Supplier Units')
 
 
     new_qty = fields.Float(
-        compute='_get_new_qty',
+        #compute='_get_new_qty',
         digits=(6, 4),
-        store=True,
+        #store=True,
     )
 
     picking_type_code = fields.Char(compute='_get_picking_type_code')
 
+
     @api.multi
-    @api.depends('viscosity')
-    def _get_new_qty(self):
+    @api.onchange('viscosity')
+    def onchange_viscosity(self):
+        print 'onchange_viscosity'
         for r in self:
-            #if r.check_viscosity and r.viscosity:
             if r.viscosity and r.viscosity > 0 and r.picking_type_code == 'incoming':
-
-                # print 'self.format_uom.name.lower(): ',self.format_uom.name.lower()
-                # print 'r.product_uom_qty_default: ',r.product_uom_qty_default
-                # print 'r.viscosity: ',r.viscosity
-                if self.format_uom.name.lower() in ('kg'):
-                    r.new_qty = r.product_uom_qty_default / float(r.viscosity)
+                r.new_qty = r.product_uom_qty_default / float(r.viscosity)
+                # if r.format_uom.name.lower() in ('kg'):
+                #     r.new_qty = r.product_uom_qty_default / float(r.viscosity)
                     
-                elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
-                    r.new_qty = r.product_uom_qty_default * r.viscosity
+                # elif r.format_uom.name.lower() in ('liter(s)','litro(s)'):
+                #     r.new_qty = r.product_uom_qty_default * r.viscosity
+                # print 'r.new_qty: ',r.new_qty
 
 
-    @api.multi
-    @api.depends('product_id')
-    def _get_viscosity(self):
-        print '_get_viscosity'
-        for r in self:
-            if not r.viscosity and r.picking_type_code == 'incoming':
-                #print '111111'
-                #r.viscosity = r.product_id.product_tmpl_id.viscosity
+    # @api.multi
+    # @api.depends('viscosity')
+    # def _get_new_qty(self):
+    #     for r in self:
+    #         if r.viscosity and r.viscosity > 0 and r.picking_type_code == 'incoming':
 
-                viscosity = 0
-                partner_id = r.picking_id and r.picking_id.partner_id or False
-                seller = r.product_id._select_seller_viscosity(partner_id)
-                #seller = self.product_id._select_seller_viscosity(partner,self.product_qty,self.order_id.date_order,self.product_uom)
+    #             if r.format_uom.name.lower() in ('kg'):
+    #                 r.new_qty = r.product_uom_qty_default / float(r.viscosity)
+                    
+    #             elif r.format_uom.name.lower() in ('liter(s)','litro(s)'):
+    #                 r.new_qty = r.product_uom_qty_default * r.viscosity
+    #             print 'r.new_qty: ',r.new_qty
 
 
-                if seller:
-                    viscosity = seller.viscosity
-                    format_uom = seller.format_uom.id
-                    print 'format_uom'
-                    r.format_uom = format_uom
+    # @api.multi
+    # @api.depends('product_id')
+    # def _get_viscosity(self):
+    #     print '_get_viscosity'
+    #     for r in self:
+    #         if not r.viscosity and r.picking_type_code == 'incoming':
+    #             #print '111111'
+    #             #r.viscosity = r.product_id.product_tmpl_id.viscosity
 
-                r.viscosity = viscosity
+    #             viscosity = 0
+    #             partner_id = r.picking_id and r.picking_id.partner_id or False
+    #             seller = r.product_id._select_seller_viscosity(partner_id)
+    #             #seller = self.product_id._select_seller_viscosity(partner,self.product_qty,self.order_id.date_order,self.product_uom)
+
+
+    #             if seller:
+    #                 viscosity = seller.viscosity
+    #                 format_uom = seller.format_uom.id
+    #                 print 'format_uom'
+    #                 r.format_uom = format_uom
+
+    #             r.viscosity = viscosity
                 
 
 
