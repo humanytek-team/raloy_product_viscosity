@@ -19,7 +19,7 @@ class ProductProduct(models.Model):
         res = self.env['product.supplierinfo']
         for seller in self.seller_ids:
             _logger.info(u'seller.name %s' % seller.name)
-            quantity_uom_seller = quantity
+            # quantity_uom_seller = quantity
             if partner_id and seller.name not in [partner_id, partner_id.parent_id]:
                 continue
             if seller.product_id and seller.product_id != self:
@@ -28,4 +28,3 @@ class ProductProduct(models.Model):
             res |= seller
             break
         return res
-       

@@ -7,19 +7,18 @@ import time
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-
-
     def check_backorder(self):
-        #print 'check_backorder----------------'
-        need_rereserve, all_op_processed = self.picking_recompute_remaining_quantities(done_qtys=True)
+        # print 'check_backorder----------------'
+        need_rereserve, all_op_processed = self.picking_recompute_remaining_quantities(
+            done_qtys=True)
 
-        #SE OBTIENE PRIMER PICKING
-        #first_picking = self.get_first_picking(self.group_id)
+        # SE OBTIENE PRIMER PICKING
+        # first_picking = self.get_first_picking(self.group_id)
 
         for move in self.move_lines:
-            #if not move.ignore:
+            # if not move.ignore:
             if move.state != 'cancel':
-            #if not self.ignore(move,first_picking): #SOLO TOMAR EN CUENTA SI NO ES DE VISCOSIDAD
+                # if not self.ignore(move,first_picking): #SOLO TOMAR EN CUENTA SI NO ES DE VISCOSIDAD
                 if float_compare(move.remaining_qty, 0, precision_rounding=move.product_id.uom_id.rounding) != 0:
                     return True
         return False
@@ -64,21 +63,20 @@ class StockPicking(models.Model):
 class StopckPackOperation(models.Model):
     _inherit = 'stock.pack.operation'
 
-
     @api.model
     def create(self, vals):
-        #print 'create'
-        #print 'vals',vals
+        # print 'create'
+        # print 'vals',vals
         vals['product_uom_qty_default'] = vals.get('product_qty')
 
-        #BUSCAR PICKING
-        picking_id = vals.get('picking_id',False)
+        # BUSCAR PICKING
+        picking_id = vals.get('picking_id', False)
         picking_obj = self.env['stock.picking']
-        res = picking_obj.search([('id','=',picking_id)])
-        #print 'res: ',res
+        res = picking_obj.search([('id', '=', picking_id)])
+        # print 'res: ',res
         if res and res.purchase_id:
             for line in res.purchase_id.order_line:
-                print 'line.product_id.id: ',line.product_id.id
+                print('line.product_id.id: ', line.product_id.id)
                 if line.product_id.id == vals.get('product_id'):
                     vals['viscosity'] = line.viscosity
                     vals['format_uom'] = line.format_uom.id
@@ -94,46 +92,42 @@ class StopckPackOperation(models.Model):
 
         return super(StopckPackOperation, self).create(vals)
 
-
     # check_viscosity = fields.Boolean(
     #     related="product_id.product_tmpl_id.check_viscosity",
     # )
     viscosity = fields.Float('Density',
-        #compute='_get_viscosity',
-        #inverse='_compute_new_qty',
-        digits=(6, 4),
-        #store=True,
-    )
+                             # compute='_get_viscosity',
+                             # inverse='_compute_new_qty',
+                             digits=(6, 4),
+                             # store=True,
+                             )
 
-    #format_uom = fields.Many2one('product.uom', compute='_get_viscosity')
+    # format_uom = fields.Many2one('product.uom', compute='_get_viscosity')
     format_uom = fields.Many2one('product.uom')
 
     product_uom_qty_default = fields.Float('Supplier Units')
 
-
     new_qty = fields.Float(
-        #compute='_get_new_qty',
+        # compute='_get_new_qty',
         digits=(6, 4),
-        #store=True,
+        # store=True,
     )
 
     picking_type_code = fields.Char(compute='_get_picking_type_code')
 
-
     @api.multi
     @api.onchange('viscosity')
     def onchange_viscosity(self):
-        print 'onchange_viscosity'
+        print('onchange_viscosity')
         for r in self:
             if r.viscosity and r.viscosity > 0 and r.picking_type_code == 'incoming':
                 r.new_qty = r.product_uom_qty_default / float(r.viscosity)
                 # if r.format_uom.name.lower() in ('kg'):
                 #     r.new_qty = r.product_uom_qty_default / float(r.viscosity)
-                    
+
                 # elif r.format_uom.name.lower() in ('liter(s)','litro(s)'):
                 #     r.new_qty = r.product_uom_qty_default * r.viscosity
                 # print 'r.new_qty: ',r.new_qty
-
 
     # @api.multi
     # @api.depends('viscosity')
@@ -143,11 +137,10 @@ class StopckPackOperation(models.Model):
 
     #             if r.format_uom.name.lower() in ('kg'):
     #                 r.new_qty = r.product_uom_qty_default / float(r.viscosity)
-                    
+
     #             elif r.format_uom.name.lower() in ('liter(s)','litro(s)'):
     #                 r.new_qty = r.product_uom_qty_default * r.viscosity
     #             print 'r.new_qty: ',r.new_qty
-
 
     # @api.multi
     # @api.depends('product_id')
@@ -163,7 +156,6 @@ class StopckPackOperation(models.Model):
     #             seller = r.product_id._select_seller_viscosity(partner_id)
     #             #seller = self.product_id._select_seller_viscosity(partner,self.product_qty,self.order_id.date_order,self.product_uom)
 
-
     #             if seller:
     #                 viscosity = seller.viscosity
     #                 format_uom = seller.format_uom.id
@@ -171,12 +163,10 @@ class StopckPackOperation(models.Model):
     #                 r.format_uom = format_uom
 
     #             r.viscosity = viscosity
-                
-
 
     @api.multi
     def _get_picking_type_code(self):
-        print '_get_picking_type_code'
+        print('_get_picking_type_code')
         for r in self:
             if r.picking_id and r.picking_id.picking_type_id:
                 r.picking_type_code = r.picking_id.picking_type_id.code
@@ -185,5 +175,5 @@ class StopckPackOperation(models.Model):
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    #INDICA SI EL MOV SERA IGNORADO AL CALCULAR LA CANTIDAD FALTANTE (remaining_qty)
+    # INDICA SI EL MOV SERA IGNORADO AL CALCULAR LA CANTIDAD FALTANTE (remaining_qty)
     ignore = fields.Boolean()

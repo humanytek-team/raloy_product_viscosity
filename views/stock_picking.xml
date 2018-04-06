@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <record model="ir.ui.view" id="view_picking_viscosity_form">
-            <field name="name">stock.picking.viscosity.form</field>
-            <field name="model">stock.picking</field>
-            <field name="inherit_id" ref="stock.view_picking_form"/>
-            <field name="arch" type="xml">
-                
-                <field name="product_qty" position="before">
-                    <!-- <field name="check_viscosity" invisible="1"/> -->
-                    <field name="product_uom_qty_default" readonly="1"/>
-                    <field name="picking_type_code" invisible="1"/>
-                    <field name="format_uom" invisible="1"/>
-                    <field name="viscosity" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
-                    <!-- <field name="viscosity" invisible="0"/> -->
-                    <!-- <field name="viscosity" attrs="{
-                            'readonly': [('check_viscosity', '=', False)],
-                            'required': [('check_viscosity', '=', True)],
-                        }"/> -->
-                     <field name="new_qty" readonly="0" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
-                </field>
+  <data>
+    <record model="ir.ui.view" id="view_picking_viscosity_form">
+      <field name="name">stock.picking.viscosity.form</field>
+      <field name="model">stock.picking</field>
+      <field name="inherit_id" ref="stock.view_picking_form"/>
+      <field name="arch" type="xml">
 
-            </field>
-        </record>
+        <field name="product_qty" position="before">
+          <!-- <field name="check_viscosity" invisible="1"/> -->
+          <field name="product_uom_qty_default" readonly="1"/>
+          <field name="picking_type_code" invisible="1"/>
+          <field name="format_uom" invisible="1"/>
+          <field name="viscosity" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
+          <!-- <field name="viscosity" invisible="0"/> -->
+          <!-- <field name="viscosity" attrs="{ 'readonly': [('check_viscosity', '=', False)], 'required': [('check_viscosity', '=', True)], }"/> -->
+          <field name="new_qty" readonly="0" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
+        </field>
 
-        <record model="ir.ui.view" id="view_pack_operation_lot_form_viscosity">
-            <field name="name">view_pack_operation_lot_form_viscosity</field>
-            <field name="model">stock.pack.operation</field>
-            <field name="inherit_id" ref="stock.view_pack_operation_lot_form"/>
-            <field name="arch" type="xml">
-                
-                <xpath expr="//group/span" position="after">
-                    <!-- <field name="new_qty" readonly="1"/> -->
-                    <field name="picking_type_code" invisible="1"/>
-                    <field name="format_uom" invisible="1"/>
-                    <field name="new_qty" readonly="1" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
-                </xpath>
-            </field>
-        </record>
-    </data>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_pack_operation_lot_form_viscosity">
+      <field name="name">view_pack_operation_lot_form_viscosity</field>
+      <field name="model">stock.pack.operation</field>
+      <field name="inherit_id" ref="stock.view_pack_operation_lot_form"/>
+      <field name="arch" type="xml">
+
+        <xpath expr="//group/span" position="after">
+          <!-- <field name="new_qty" readonly="1"/> -->
+          <field name="picking_type_code" invisible="1"/>
+          <field name="format_uom" invisible="1"/>
+          <field name="new_qty" readonly="1" attrs="{'invisible': [('picking_type_code', 'not in', ['incoming',])]}"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
 </odoo>

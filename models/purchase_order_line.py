@@ -7,16 +7,14 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
-
 
     # @api.onchange('product_qty', 'product_uom')
     # def _onchange_quantity(self):
     #     """
     #     SOBRESCRITURA DE METODO onchange
-    #     PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO 
+    #     PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO
     #     EN LAS LINEAS DE COMPRA
     #     """
     #     print '_onchange_quantity'
@@ -48,11 +46,12 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('product_qty', 'product_uom')
     def _onchange_quantity(self):
         """
-        SOBRESCRITURA DE METODO onchange
-        PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO 
+        SOBRESCRITURA DE METODO onchange.
+
+        PARA AGREGAR DATOS VISCOSIDAD, NEW CANTIDAD, NUEVO PRECIO
         EN LAS LINEAS DE COMPRA
         """
-        print '_onchange_quantity'
+        print('_onchange_quantity')
         if not self.product_id:
             return
 
@@ -63,21 +62,25 @@ class PurchaseOrderLine(models.Model):
             uom_id=self.product_uom)
 
         if seller or not self.date_planned:
-            self.date_planned = self._get_date_planned(seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            self.date_planned = self._get_date_planned(
+                seller).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
         if not seller:
             return
 
-        price_unit = self.env['account.tax']._fix_tax_included_price(seller.price, self.product_id.supplier_taxes_id, self.taxes_id) if seller else 0.0
+        price_unit = self.env['account.tax']._fix_tax_included_price(
+            seller.price, self.product_id.supplier_taxes_id, self.taxes_id) if seller else 0.0
         if price_unit and seller and self.order_id.currency_id and seller.currency_id != self.order_id.currency_id:
-            price_unit = seller.currency_id.compute(price_unit, self.order_id.currency_id)
+            price_unit = seller.currency_id.compute(
+                price_unit, self.order_id.currency_id)
 
         if seller and self.product_uom and seller.product_uom != self.product_uom:
-            price_unit = seller.product_uom._compute_price(price_unit, self.product_uom)
+            price_unit = seller.product_uom._compute_price(
+                price_unit, self.product_uom)
 
         self.price_unit = price_unit
-        
-        #NEW#################
+
+        # NEW#################
         viscosity = 0
         format_uom = False
         if seller:
@@ -93,7 +96,7 @@ class PurchaseOrderLine(models.Model):
 
             if format_uom.name.lower() in ('kg'):
                 x_qty = self.new_qty / self.viscosity
-            elif format_uom.name.lower() in ('liter(s)','litro(s)'):
+            elif format_uom.name.lower() in ('liter(s)', 'litro(s)'):
                 x_qty = self.new_qty * self.viscosity
 
             if float_compare(x_qty, self.product_qty, precision_digits=5) != 0:
@@ -101,15 +104,12 @@ class PurchaseOrderLine(models.Model):
 
             self.new_price_unit = self.price_unit
             self.onchange_new_price_unit()
-            #print 'self.new_price_unit: ',self.new_price_unit
+            # print 'self.new_price_unit: ',self.new_price_unit
 
         # if viscosity > 0:
         #     self.new_qty = self.get_new_qty()
         #     self.new_price_unit = self.get_new_price()
         #####################
-        
-
-
 
     # @api.multi
     # def get_format_uom(self):
@@ -135,7 +135,6 @@ class PurchaseOrderLine(models.Model):
     #     else:
     #         return self.format_uom
 
-
     # @api.multi
     # def get_new_qty(self):
     #     """
@@ -159,7 +158,6 @@ class PurchaseOrderLine(models.Model):
 
     #     return new_qty
 
-
     # @api.multi
     # def get_original_price(self,default_price=False):
     #     print 'get_original_price'
@@ -176,11 +174,10 @@ class PurchaseOrderLine(models.Model):
     #         if format_uom:
     #             if format_uom.name.lower() in ('kg'):
     #                 new_price = new_price * self.viscosity
-                    
+
     #             elif format_uom.name.lower() in ('liter(s)','litro(s)'):
     #                 new_price = new_price / self.viscosity
     #     return new_price
-
 
     # @api.multi
     # def get_new_price(self,default_price=False):
@@ -199,13 +196,11 @@ class PurchaseOrderLine(models.Model):
     #             if format_uom.name.lower() in ('kg'):
     #                 new_price = new_price / self.viscosity
     #                 #new_price = self.price_unit / self.viscosity
-                    
+
     #             elif format_uom.name.lower() in ('liter(s)','litro(s)'):
     #                 new_price = new_price * self.viscosity
     #                 #new_price = self.price_unit * self.viscosity
     #     return new_price
-
-
 
     # @api.multi
     # def get_new_price(self,default_price=False):
@@ -233,15 +228,14 @@ class PurchaseOrderLine(models.Model):
     #     for rec in self:
     #         rec.new_price_unit = rec.get_new_price()
 
-
     @api.onchange('new_qty')
     def onchange_new_qty(self):
-        print 'onchange_new_qty'
+        print('onchange_new_qty')
         if self.viscosity > 0:
             if self.format_uom.name.lower() in ('kg'):
                 self.product_qty = self.new_qty / self.viscosity
-                
-            elif self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+
+            elif self.format_uom.name.lower() in ('liter(s)', 'litro(s)'):
                 self.product_qty = self.new_qty * self.viscosity
 
     # @api.onchange('new_qty')
@@ -251,15 +245,14 @@ class PurchaseOrderLine(models.Model):
     #         self.product_qty = self.new_qty / self.viscosity
     #         print 'self.product_qty: ',self.product_qty
 
-    @api.onchange('new_price_unit','new_qty')
+    @api.onchange('new_price_unit', 'new_qty')
     def onchange_new_price_unit(self):
-        print 'onchange_new_price_unit'
+        print('onchange_new_price_unit')
         if self.viscosity > 0:
-            if self.format_uom.name.lower() in ('liter(s)','litro(s)'):
+            if self.format_uom.name.lower() in ('liter(s)', 'litro(s)'):
                 return
             else:
                 self.price_unit = self.new_price_unit * self.viscosity
-
 
     # @api.onchange('new_price_unit','new_qty')
     # def onchange_new_price_unit(self):
@@ -267,11 +260,13 @@ class PurchaseOrderLine(models.Model):
     #     if self.viscosity > 0:
     #         self.price_unit = self.new_price_unit * self.viscosity
 
-    #CAMPOS
-    #regular_price_unit = fields.Float(string='Original Unit Price', required=False, digits=dp.get_precision('Product Price'))
+    # CAMPOS
+    # regular_price_unit = fields.Float(string='Original Unit Price', required=False, digits=dp.get_precision('Product Price'))
 
-    viscosity = fields.Float('Density',digits=(6, 4))
+    viscosity = fields.Float('Density', digits=(6, 4))
     format_uom = fields.Many2one('product.uom')
-    new_qty = fields.Float(string='New Qty', digits=dp.get_precision('Product Price'))
-    new_price_unit = fields.Float(string='New Price', digits=dp.get_precision('Product Price'))
-    #new_price_unit = fields.Float(string='New Price', digits=dp.get_precision('Product Price'),compute='_compute_new_price_unit')
+    new_qty = fields.Float(
+        string='New Qty', digits=dp.get_precision('Product Price'))
+    new_price_unit = fields.Float(
+        string='New Price', digits=dp.get_precision('Product Price'))
+    # new_price_unit = fields.Float(string='New Price', digits=dp.get_precision('Product Price'),compute='_compute_new_price_unit')

@@ -1,39 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <template id="report_purchasequotation_document_viscosity" inherit_id="purchase.report_purchasequotation_document">
-            <xpath expr="//table[@class='table table-condensed']//tbody//td[@class='text-right']" position="replace">
-                <!-- <div t-if="order_line.check_viscosity != True"> -->
-                <div t-if="order_line.viscosity &lt;= 0">
-                    <td class="text-right">
-                        <span t-field="order_line.product_qty"/>
-                        <span t-field="order_line.product_uom.name" groups="product.group_uom"/>
-                    </td>
-                </div>
+  <data>
+    <template id="report_purchasequotation_document_viscosity" inherit_id="purchase.report_purchasequotation_document">
+      <xpath expr="//table[@class='table table-condensed']//tbody//td[@class='text-right']" position="replace">
+        <!-- <div t-if="order_line.check_viscosity != True"> -->
+        <div t-if="order_line.viscosity &lt;= 0">
+          <td class="text-right">
+            <span t-field="order_line.product_qty"/>
+            <span t-field="order_line.product_uom.name" groups="product.group_uom"/>
+          </td>
+        </div>
 
-                <div t-if="order_line.viscosity &gt; 0">
-                    <td class="text-right">
-                        <!-- <span t-field="order_line.product_qty"/> -->
-                        <span t-field="order_line.new_qty"/>
-                        <span t-field="order_line.format_uom.name"/>
-                        <!-- <span t-esc="order_line.get_new_qty()" />
-                        <span t-esc="order_line.get_format_uom().name" /> -->
-                    </td>
-                </div>
+        <div t-if="order_line.viscosity &gt; 0">
+          <td class="text-right">
+            <!-- <span t-field="order_line.product_qty"/> -->
+            <span t-field="order_line.new_qty"/>
+            <span t-field="order_line.format_uom.name"/>
+            <!-- <span t-esc="order_line.get_new_qty()" /> <span t-esc="order_line.get_format_uom().name" /> -->
+          </td>
+        </div>
 
-            </xpath>
+      </xpath>
 
-            <xpath expr="//table[@class='table table-condensed']/tbody/tr/td[4]" position="replace">
-                <td class="text-right">
-                    <!-- <span t-esc="'{0:,.4f}'.format(order_line.get_original_price())" /> -->
-                    <span t-esc="'{0:,.4f}'.format(order_line.new_price_unit)" />
-                </td>
-            </xpath>
+      <xpath expr="//table[@class='table table-condensed']/tbody/tr/td[4]" position="replace">
+        <td class="text-right">
+          <!-- <span t-esc="'{0:,.4f}'.format(order_line.get_original_price())" /> -->
+          <span t-esc="'{0:,.4f}'.format(order_line.new_price_unit)"/>
+        </td>
+      </xpath>
 
-        </template>
+    </template>
 
-    </data>
+  </data>
 </odoo>
-
-
-            

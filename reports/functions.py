@@ -71,7 +71,7 @@ _logger = logging.getLogger(__name__)
 
 #             if format_uom.lower() in ('kg'):
 #                 new_qty = self.product_qty / self.viscosity
-                
+
 #             elif format_uom.lower() in ('liter(s)','litro(s)'):
 #                 new_qty = self.product_qty * self.viscosity
 
@@ -90,7 +90,7 @@ _logger = logging.getLogger(__name__)
 
 #             if format_uom.lower() in ('kg'):
 #                 new_price = self.price_unit / self.viscosity
-                
+
 #             elif format_uom.lower() in ('liter(s)','litro(s)'):
 #                 new_price = self.price_unit * self.viscosity
 
@@ -114,7 +114,6 @@ _logger = logging.getLogger(__name__)
 #     price_tax_viscosity = fields.Monetary(compute='_compute_amount_viscosity', string='Tax Viscosity', store=False)
 
 
-
 class ProductProduct(models.Model):
     _inherit = ['product.product']
 
@@ -128,7 +127,7 @@ class ProductProduct(models.Model):
         for seller in self.seller_ids:
             _logger.info(u'seller.name %s' % seller.name)
             # Set quantity in UoM of seller
-            quantity_uom_seller = quantity
+            # quantity_uom_seller = quantity
             # if quantity_uom_seller and uom_id and uom_id != seller.product_uom:
             #     quantity_uom_seller = uom_id._compute_quantity(quantity_uom_seller, seller.product_uom)
 
@@ -151,4 +150,4 @@ class ProductProduct(models.Model):
             res |= seller
             break
         return res
-#        
+#

@@ -33,7 +33,7 @@
         'reports/purchase_quotation.xml',
         'views/product_template.xml',
         'views/purchase.xml',
-        #'views/stock_move.xml',
+        # 'views/stock_move.xml',
         'views/stock_picking.xml',
     ]
 }
