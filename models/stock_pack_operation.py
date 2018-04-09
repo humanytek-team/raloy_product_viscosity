@@ -115,8 +115,15 @@ class StopckPackOperation(models.Model):
 
     picking_type_code = fields.Char(compute='_get_picking_type_code')
 
+    @api.one
+    @api.constrains('product_uom_qty_default')
+    def _check_product_uom_qty_default(self):
+        if self.viscosity and self.product_uom_qty_default <= 0:
+            raise exceptions.ValidationError(
+                _("The Supplier Units must be positive"))
+
     @api.multi
-    @api.onchange('viscosity')
+    @api.onchange('viscosity', 'product_uom_qty_default')
     def onchange_viscosity(self):
         print('onchange_viscosity')
         for r in self:
